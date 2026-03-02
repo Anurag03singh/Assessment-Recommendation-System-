@@ -1,0 +1,102 @@
+[
+  {
+    "assessment_name": "Numerical Reasoning Test",
+    "url": "https://www.shl.com/solutions/products/numerical-reasoning/",
+    "test_type": "K",
+    "description": "Measures ability to work with numerical data, interpret charts and graphs, and solve mathematical problems in a business context.",
+    "skills": "Numerical, Analytical, Problem Solving",
+    "job_level": "All Levels",
+    "duration": "20 min",
+    "category": "Cognitive Ability"
+  },
+  {
+    "assessment_name": "Verbal Reasoning Test",
+    "url": "https://www.shl.com/solutions/products/verbal-reasoning/",
+    "test_type": "K",
+    "description": "Evaluates ability to understand written information, draw logical conclusions, and evaluate arguments.",
+    "skills": "Verbal, Comprehension, Critical Thinking",
+    "job_level": "All Levels",
+    "duration": "18 min",
+    "category": "Cognitive Ability"
+  },
+  {
+    "assessment_name": "OPQ32 Personality Questionnaire",
+    "url": "https://www.shl.com/solutions/products/opq32/",
+    "test_type": "P",
+    "description": "Comprehensive personality assessment measuring 32 personality characteristics relevant to workplace behavior and performance.",
+    "skills": "Personality, Behavioral Traits",
+    "job_level": "All Levels",
+    "duration": "25 min",
+    "category": "Personality"
+  },
+  {
+    "assessment_name": "Mechanical Comprehension Test",
+    "url": "https://www.shl.com/solutions/products/mechanical-comprehension/",
+    "test_type": "K",
+    "description": "Assesses understanding of mechanical and physical principles, including force, motion, and basic engineering concepts.",
+    "skills": "Mechanical, Technical, Spatial",
+    "job_level": "Technical Roles",
+    "duration": "15 min",
+    "category": "Technical Skills"
+  },
+  {
+    "assessment_name": "Situational Judgment Test",
+    "url": "https://www.shl.com/solutions/products/situational-judgment/",
+    "test_type": "P",
+    "description": "Presents realistic workplace scenarios to evaluate judgment, decision-making, and behavioral tendencies.",
+    "skills": "Judgment, Decision Making, Interpersonal",
+    "job_level": "All Levels",
+    "duration": "20 min",
+    "category": "Behavioral Assessment"
+  },
+  {
+    "assessment_name": "Java Programming Test",
+    "url": "https://www.shl.com/solutions/products/java-programming/",
+    "test_type": "K",
+    "description": "Technical assessment of Java programming skills including syntax, algorithms, and object-oriented programming concepts.",
+    "skills": "Java, Programming, Technical",
+    "job_level": "Developer",
+    "duration": "45 min",
+    "category": "Technical Skills"
+  },
+  {
+    "assessment_name": "Leadership Potential Assessment",
+    "url": "https://www.shl.com/solutions/products/leadership-potential/",
+    "test_type": "P",
+    "description": "Evaluates leadership capabilities, strategic thinking, and potential for management roles.",
+    "skills": "Leadership, Strategic Thinking, Management",
+    "job_level": "Manager",
+    "duration": "30 min",
+    "category": "Leadership"
+  },
+  {
+    "assessment_name": "Customer Service Aptitude Test",
+    "url": "https://www.shl.com/solutions/products/customer-service/",
+    "test_type": "P",
+    "description": "Measures customer service orientation, empathy, communication skills, and problem-solving in customer interactions.",
+    "skills": "Communication, Empathy, Customer Focus",
+    "job_level": "Entry Level",
+    "duration": "15 min",
+    "category": "Behavioral Assessment"
+  },
+  {
+    "assessment_name": "Inductive Reasoning Test",
+    "url": "https://www.shl.com/solutions/products/inductive-reasoning/",
+    "test_type": "K",
+    "description": "Assesses ability to identify patterns, think logically, and solve abstract problems.",
+    "skills": "Logical, Pattern Recognition, Abstract Thinking",
+    "job_level": "All Levels",
+    "duration": "20 min",
+    "category": "Cognitive Ability"
+  },
+  {
+    "assessment_name": "Teamwork and Collaboration Assessment",
+    "url": "https://www.shl.com/solutions/products/teamwork/",
+    "test_type": "P",
+    "description": "Evaluates ability to work effectively in teams, collaborate with others, and contribute to group success.",
+    "skills": "Teamwork, Collaboration, Interpersonal",
+    "job_level": "All Levels",
+    "duration": "20 min",
+    "category": "Behavioral Assessment"
+  }
+]
