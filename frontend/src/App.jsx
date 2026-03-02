@@ -112,44 +112,79 @@ function App() {
               </div>
             </div>
 
-            <div className="space-y-4">
-              {results.recommendations.map((rec, idx) => (
-                <div
-                  key={idx}
-                  className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition"
-                >
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-lg font-semibold text-gray-900">
-                      {rec.assessment_name}
-                    </h3>
-                    <span
-                      className={`px-2 py-1 rounded text-xs font-medium ${
-                        rec.test_type === 'K'
-                          ? 'bg-blue-100 text-blue-800'
-                          : 'bg-purple-100 text-purple-800'
-                      }`}
-                    >
-                      {rec.test_type === 'K' ? 'Knowledge' : 'Personality'}
-                    </span>
-                  </div>
-                  
-                  <p className="text-gray-600 text-sm mb-2">{rec.description}</p>
-                  
-                  <div className="flex gap-4 text-xs text-gray-500 mb-2">
-                    <span>Category: {rec.category}</span>
-                    <span>Skills: {rec.skills}</span>
-                  </div>
-                  
-                  <a
-                    href={rec.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-                  >
-                    View Assessment →
-                  </a>
-                </div>
-              ))}
+            {/* Table Format */}
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      #
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Type
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Assessment Name
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Description
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Skills
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Category
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      URL
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {results.recommendations.map((rec, idx) => (
+                    <tr key={idx} className="hover:bg-gray-50">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {idx + 1}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        <span
+                          className={`px-2 py-1 rounded text-xs font-medium ${
+                            rec.test_type === 'K'
+                              ? 'bg-blue-100 text-blue-800'
+                              : 'bg-purple-100 text-purple-800'
+                          }`}
+                        >
+                          {rec.test_type === 'K' ? 'Knowledge' : 'Personality'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4 text-sm font-medium text-gray-900">
+                        {rec.assessment_name}
+                      </td>
+                      <td className="px-4 py-4 text-sm text-gray-600 max-w-xs">
+                        {rec.description.length > 100
+                          ? rec.description.substring(0, 100) + '...'
+                          : rec.description}
+                      </td>
+                      <td className="px-4 py-4 text-sm text-gray-600">
+                        {rec.skills}
+                      </td>
+                      <td className="px-4 py-4 text-sm text-gray-600">
+                        {rec.category}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm">
+                        <a
+                          href={rec.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 font-medium"
+                        >
+                          View →
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
