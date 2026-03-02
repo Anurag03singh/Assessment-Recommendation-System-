@@ -2,6 +2,7 @@
 SHL Product Catalog Scraper
 Crawls https://www.shl.com/solutions/products/product-catalog/
 Extracts Individual Test Solutions (not pre-packaged job solutions)
+Target: 377+ individual test solutions
 """
 import requests
 from bs4 import BeautifulSoup
@@ -9,18 +10,68 @@ import json
 import time
 from typing import List, Dict
 import re
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.options import Options
 
 
 class SHLScraper:
-    def __init__(self):
+    def __init__(self, use_selenium: bool = False):
         self.base_url = "https://www.shl.com"
         self.catalog_url = f"{self.base_url}/solutions/products/product-catalog/"
         self.headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
         }
+        self.use_selenium = use_selenium
+        self.driver = None
+    
+    def init_selenium(self):
+        """Initialize Selenium WebDriver for dynamic content"""
+        if self.driver:
+            return
+        
+        print("Initializing Selenium WebDriver...")
+        chrome_options = Options()
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--disable-dev-shm-usage')
+        chrome_options.add_argument(f'user-agent={self.headers["User-Agent"]}')
+        
+        try:
+            self.driver = webdriver.Chrome(options=chrome_options)
+            print("✓ Selenium initialized")
+        except Exception as e:
+            print(f"⚠️  Selenium initialization failed: {e}")
+            print("Falling back to requests library")
+            self.use_selenium = False
+    
+    def close_selenium(self):
+        """Close Selenium WebDriver"""
+        if self.driver:
+            self.driver.quit()
+            self.driver = None
     
     def fetch_page(self, url: str) -> BeautifulSoup:
         """Fetch and parse HTML page"""
+        if self.use_selenium:
+            if not self.driver:
+                self.init_selenium()
+            
+            if self.driver:
+                try:
+                    self.driver.get(url)
+                    # Wait for content to load
+                    WebDriverWait(self.driver, 10).until(
+                        EC.presence_of_element_located((By.TAG_NAME, "body"))
+                    )
+                    time.sleep(2)  # Additional wait for dynamic content
+                    return BeautifulSoup(self.driver.page_source, 'html.parser')
+                except Exception as e:
+                    print(f"Selenium fetch failed: {e}, falling back to requests")
+        
+        # Fallback to requests
         response = requests.get(url, headers=self.headers)
         response.raise_for_status()
         return BeautifulSoup(response.content, 'html.parser')
@@ -150,12 +201,49 @@ class SHLScraper:
 
 
 if __name__ == "__main__":
-    scraper = SHLScraper()
-    assessments = scraper.scrape_catalog()
+    import sys
     
-    if len(assessments) < 50:
-        print("\n⚠️  WARNING: Only scraped {len(assessments)} assessments.")
-        print("The actual catalog has 377+ Individual Test Solutions.")
-        print("You may need to use Selenium for dynamic content or adjust selectors.")
+    # Check if user wants to use Selenium
+    use_selenium = '--selenium' in sys.argv or '-s' in sys.argv
     
-    scraper.save_to_json(assessments)
+    print("="*60)
+    print("SHL CATALOG SCRAPER")
+    print("="*60)
+    print(f"Target: 377+ Individual Test Solutions")
+    print(f"Method: {'Selenium (dynamic)' if use_selenium else 'Requests (static)'}")
+    print()
+    
+    scraper = SHLScraper(use_selenium=use_selenium)
+    
+    try:
+        assessments = scraper.scrape_catalog()
+        
+        print(f"\n{'='*60}")
+        print(f"SCRAPING COMPLETE")
+        print(f"{'='*60}")
+        print(f"Total assessments scraped: {len(assessments)}")
+        
+        if len(assessments) < 377:
+            print(f"\n⚠️  WARNING: Only scraped {len(assessments)} assessments.")
+            print(f"Expected: 377+ Individual Test Solutions")
+            print(f"\nTroubleshooting:")
+            print(f"1. Try with Selenium: python scraper.py --selenium")
+            print(f"2. Check if website structure changed")
+            print(f"3. Verify internet connection")
+            print(f"4. Check CSS selectors in scraper.py")
+        else:
+            print(f"✓ Successfully scraped {len(assessments)} assessments")
+        
+        # Save to JSON
+        scraper.save_to_json(assessments)
+        
+        # Show sample
+        if assessments:
+            print(f"\nSample assessment:")
+            sample = assessments[0]
+            print(f"  Name: {sample['assessment_name']}")
+            print(f"  Type: {sample['test_type']}")
+            print(f"  URL: {sample['url']}")
+        
+    finally:
+        scraper.close_selenium()
