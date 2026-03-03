@@ -5,13 +5,13 @@ services:
     region: oregon
     plan: free
     buildCommand: "pip install -r backend/requirements-lite.txt"
-    startCommand: "cd backend && uvicorn main_production:app --host 0.0.0.0 --port $PORT"
+    startCommand: "cd backend && python -m uvicorn main_production:app --host 0.0.0.0 --port $PORT"
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.0
+        value: "3.11.0"
       - key: USE_LITE_MODE
-        value: true
+        value: "true"
       - key: SKIP_RERANKING
-        value: false
+        value: "false"
       - key: CHROMA_DB_PATH
-        value: ./chroma_db
+        value: "./chroma_db"
