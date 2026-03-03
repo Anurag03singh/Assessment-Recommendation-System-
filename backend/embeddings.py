@@ -133,7 +133,24 @@ if __name__ == "__main__":
     # Load assessments - use real catalog if available
     import os
     
-    catalog_file = "data/shl_catalog.json" if os.path.exists("data/shl_catalog.json") else "data/sample_catalog.json"
+    # Try different paths depending on where script is run from
+    possible_paths = [
+        "data/shl_catalog.json",
+        "backend/data/shl_catalog.json",
+        "data/sample_catalog.json",
+        "backend/data/sample_catalog.json"
+    ]
+    
+    catalog_file = None
+    for path in possible_paths:
+        if os.path.exists(path):
+            catalog_file = path
+            break
+    
+    if not catalog_file:
+        print("Error: No catalog file found!")
+        print("Tried:", possible_paths)
+        exit(1)
     
     print(f"Loading catalog from: {catalog_file}")
     with open(catalog_file, 'r', encoding='utf-8') as f:
@@ -143,6 +160,11 @@ if __name__ == "__main__":
     em = EmbeddingManager()
     em.build_index(assessments)
     
+    # Test search
+    results = em.search("Java developer with good communication skills", k=10)
+    print("\nTop 3 results:")
+    for i, r in enumerate(results[:3]):
+        print(f"{i+1}. {r['metadata']['assessment_name']} ({r['metadata']['test_type']})")
     # Test search
     results = em.search("Java developer with good communication skills", k=10)
     print("\nTop 3 results:")
