@@ -19,11 +19,11 @@
 - **Environment**: `Python 3`
 - **Build Command**: 
   ```
-  pip install -r requirements.txt && cd backend && python embeddings.py
+  pip install -r requirements.txt && python backend/embeddings.py
   ```
 - **Start Command**: 
   ```
-  cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT
+  uvicorn app:app --host 0.0.0.0 --port $PORT
   ```
 
 **Instance Type:**
@@ -94,7 +94,7 @@ curl -X POST https://your-app-name.onrender.com/recommend \
 
 ### Option 1: Standard (Recommended)
 ```bash
-pip install -r requirements.txt && cd backend && python embeddings.py
+pip install -r requirements.txt && python backend/embeddings.py
 ```
 
 ### Option 2: If embeddings.py fails
@@ -105,7 +105,7 @@ Then build embeddings after first deploy via shell.
 
 ### Option 3: With caching
 ```bash
-pip install --cache-dir /tmp/pip-cache -r requirements.txt && cd backend && python embeddings.py
+pip install --cache-dir /tmp/pip-cache -r requirements.txt && python backend/embeddings.py
 ```
 
 ## Environment Variables (Optional)
