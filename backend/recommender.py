@@ -4,11 +4,8 @@ Recommendation Engine with Balanced K/P Logic
 from typing import List, Dict, Optional
 import os
 
-# Import appropriate embedding manager based on environment
-if os.environ.get('USE_LITE_MODE', 'false').lower() == 'true':
-    from embeddings_lite import EmbeddingManager
-else:
-    from embeddings import EmbeddingManager
+# Always use embeddings_lite (production version)
+from embeddings_lite import EmbeddingManager
 
 
 class RecommendationEngine:
