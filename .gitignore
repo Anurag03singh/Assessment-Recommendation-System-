@@ -56,8 +56,8 @@ build/
 .env.local
 .env.*.local
 
-# ChromaDB
-backend/chroma_db/
+# ChromaDB (commented out to include pre-built embeddings)
+# backend/chroma_db/
 
 # Data (keep structure, ignore large files)
 *.xlsx
