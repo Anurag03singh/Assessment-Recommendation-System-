@@ -1,10 +1,14 @@
 # Deployment Guide
 
-## Prerequisites
+## Recommended: Render (Backend) + Vercel (Frontend)
 
-- GitHub account
-- Render account (for backend) - https://render.com
-- Vercel account (for frontend) - https://vercel.com
+**Why?**
+- Backend has large ML dependencies (7+ GB) - needs Render
+- Frontend is lightweight - perfect for Vercel
+- Both have generous free tiers
+- Total cost: $0
+
+---
 
 ## Backend Deployment (Render)
 
