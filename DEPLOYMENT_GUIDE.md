@@ -25,7 +25,7 @@ git push origin main
 4. Configure:
    - **Name**: `shl-recommender-api`
    - **Environment**: `Python 3`
-   - **Build Command**: `cd backend && pip install -r ../requirements.txt && python embeddings.py`
+   - **Build Command**: `pip install -r requirements.txt && cd backend && python embeddings.py`
    - **Start Command**: `cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT`
    - **Instance Type**: Free
 5. Click "Create Web Service"
