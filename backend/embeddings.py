@@ -10,26 +10,28 @@ import numpy as np
 
 
 class EmbeddingManager:
-    def __init__(self, model_name: str = "all-MiniLM-L6-v2"):
+    def __init__(self, model_name: str = "all-MiniLM-L6-v2", db_path: str = "./chroma_db"):
         """Initialize embedding model and vector store"""
         print(f"Loading embedding model: {model_name}")
         self.embedding_model = SentenceTransformer(model_name)
         self.cross_encoder = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
         
-        # Initialize ChromaDB with new API
-        self.client = chromadb.PersistentClient(path="./chroma_db")
+        # Initialize ChromaDB with persistent path
+        self.db_path = db_path
+        self.client = chromadb.PersistentClient(path=self.db_path)
         
         self.collection = None
     
     def create_enriched_text(self, assessment: Dict) -> str:
         """Create enriched text for better embedding"""
+        test_types = ", ".join(assessment.get('test_type', []))
         return f"""
 Assessment Name: {assessment.get('assessment_name', '')}
-Test Type: {assessment.get('test_type', '')}
+Test Type: {test_types}
 Description: {assessment.get('description', '')}
-Skills: {assessment.get('skills', '')}
-Job Level: {assessment.get('job_level', '')}
-Category: {assessment.get('category', '')}
+Duration: {assessment.get('duration', '')} minutes
+Adaptive Support: {assessment.get('adaptive_support', 'No')}
+Remote Support: {assessment.get('remote_support', 'Yes')}
         """.strip()
     
     def build_index(self, assessments: List[Dict], collection_name: str = "shl_assessments"):
@@ -54,11 +56,11 @@ Category: {assessment.get('category', '')}
             {
                 "assessment_name": a.get("assessment_name", ""),
                 "url": a.get("url", ""),
-                "test_type": a.get("test_type", "K"),
+                "test_type": ", ".join(a.get("test_type", [])),
                 "description": a.get("description", ""),
-                "skills": a.get("skills", ""),
-                "job_level": a.get("job_level", ""),
-                "category": a.get("category", "")
+                "duration": a.get("duration", 60),
+                "adaptive_support": a.get("adaptive_support", "No"),
+                "remote_support": a.get("remote_support", "Yes")
             }
             for a in assessments
         ]
@@ -128,8 +130,13 @@ Category: {assessment.get('category', '')}
 
 
 if __name__ == "__main__":
-    # Load assessments
-    with open("data/shl_catalog.json", 'r', encoding='utf-8') as f:
+    # Load assessments - use real catalog if available
+    import os
+    
+    catalog_file = "data/shl_catalog.json" if os.path.exists("data/shl_catalog.json") else "data/sample_catalog.json"
+    
+    print(f"Loading catalog from: {catalog_file}")
+    with open(catalog_file, 'r', encoding='utf-8') as f:
         assessments = json.load(f)
     
     # Build index

@@ -1,135 +1,154 @@
 # SHL Assessment Recommendation System
 
-Production-ready RAG-based recommendation system for SHL assessments with balanced K/P filtering and comprehensive evaluation framework.
+A machine learning-powered recommendation system that suggests relevant SHL assessments based on job descriptions and hiring requirements.
 
-> 🚀 **New here?** Start with **[START_HERE.md](START_HERE.md)** for a quick orientation!
+## Overview
 
-## Key Features
+This system uses semantic search and natural language processing to match job requirements with appropriate SHL assessments. It analyzes job descriptions and recommends a balanced mix of technical skills assessments and behavioral/personality tests.
 
-✅ Web scraper for 377+ SHL individual test solutions  
-✅ Semantic search using sentence-transformers + ChromaDB  
-✅ Cross-encoder re-ranking for improved accuracy  
-✅ Intelligent K/P balance based on query analysis  
-✅ Recall@K evaluation framework  
-✅ FastAPI backend with OpenAPI docs  
-✅ Clean React + Tailwind frontend  
-✅ Production deployment ready  
+## Features
 
-## Architecture
+- Semantic understanding of job descriptions using sentence transformers
+- Intelligent balancing between Knowledge & Skills and Personality & Behaviour assessments
+- Cross-encoder re-ranking for improved relevance
+- REST API for easy integration
+- Web interface for interactive testing
 
-```
-User Input (Query/JD/URL)
-         ↓
-   Preprocessing & Query Enhancement
-         ↓
-   Embedding (all-MiniLM-L6-v2)
-         ↓
-   Vector Search (ChromaDB) → Top 20
-         ↓
-   Cross-Encoder Re-ranking
-         ↓
-   Balanced K/P Filtering
-         ↓
-   Top 10 Recommendations
-         ↓
-   API Response (JSON)
-```
+## Tech Stack
 
-## Quick Start
+- **Backend**: FastAPI, Python 3.10+
+- **ML/NLP**: sentence-transformers, ChromaDB
+- **Frontend**: React, Vite
+- **Data Processing**: pandas, BeautifulSoup4
 
-See [QUICKSTART.md](QUICKSTART.md) for detailed setup instructions.
+## Installation
+
+### Prerequisites
+- Python 3.10 or higher
+- Node.js 16+ (for frontend)
+
+### Backend Setup
 
 ```bash
-# Backend (5 min)
-cd backend
+# Install dependencies
 pip install -r requirements.txt
-python setup.py  # Interactive setup
-uvicorn main:app --reload
 
-# Frontend (2 min)
+# Build the vector index
+cd backend
+python embeddings.py
+
+# Start the API server
+python main.py
+```
+
+The API will be available at `http://localhost:8000`
+
+### Frontend Setup
+
+```bash
 cd frontend
 npm install
-echo "VITE_API_URL=http://localhost:8000" > .env
 npm run dev
 ```
 
-**Note:** Sample data files are provided in `backend/data/` for testing. Replace with actual scraped data and labeled queries for production use.
+The web interface will be available at `http://localhost:3000`
+
+## API Usage
+
+### Health Check
+```bash
+GET /health
+```
+
+### Get Recommendations
+```bash
+POST /recommend
+Content-Type: application/json
+
+{
+  "query": "Looking for Java developers with strong communication skills"
+}
+```
+
+Response:
+```json
+{
+  "recommended_assessments": [
+    {
+      "url": "https://www.shl.com/...",
+      "adaptive_support": "No",
+      "description": "Technical assessment...",
+      "duration": 45,
+      "remote_support": "Yes",
+      "test_type": ["Knowledge & Skills"]
+    }
+  ]
+}
+```
 
 ## Project Structure
 
 ```
-.
 ├── backend/
-│   ├── main.py              # FastAPI application
-│   ├── scraper.py           # SHL catalog web scraper
-│   ├── embeddings.py        # Embedding & vector store
-│   ├── recommender.py       # Recommendation engine
-│   ├── evaluate.py          # Recall@K evaluation
-│   ├── export_csv.py        # CSV export for submission
-│   ├── test_system.py       # System tests
-│   ├── setup.py             # Setup wizard
-│   └── requirements.txt
+│   ├── main.py                 # FastAPI application
+│   ├── embeddings.py           # Vector store management
+│   ├── recommender.py          # Recommendation engine
+│   ├── evaluate.py             # Evaluation metrics
+│   ├── export_csv.py           # CSV export utility
+│   ├── scraper.py              # Data collection
+│   └── data/
+│       ├── shl_catalog.json    # Assessment catalog
+│       └── labeled_queries.json # Training data
 ├── frontend/
-│   ├── src/
-│   │   ├── App.jsx          # Main React component
-│   │   └── main.jsx
-│   ├── package.json
-│   └── vite.config.js
-├── QUICKSTART.md            # Setup guide
-├── TECHNICAL_DOCUMENT.md    # 2-page technical doc
-└── DEPLOYMENT.md            # Deployment guide
+│   └── src/
+│       └── App.jsx             # React application
+└── requirements.txt
 ```
 
-## Tech Stack
+## How It Works
 
-- Backend: Python 3.11, FastAPI, Sentence Transformers, ChromaDB, Cross-Encoder
-- Frontend: React 18, Tailwind CSS, Vite
-- Deployment: Render (API), Vercel (Frontend)
-- Evaluation: Custom Recall@K implementation
-
-## Testing
-
-```bash
-cd backend
-python test_system.py  # Run all tests
-```
-
-## Documentation
-
-📖 **[INDEX.md](INDEX.md)** - Complete documentation index and reading guide
-
-### Getting Started
-- [QUICKSTART.md](QUICKSTART.md) - Setup and usage guide (start here!)
-- [COMMANDS.md](COMMANDS.md) - Command reference for all operations
-- [verify_setup.py](verify_setup.py) - Verify all files are in place
-
-### Architecture & Design
-- [ARCHITECTURE.md](ARCHITECTURE.md) - Detailed system architecture with diagrams
-- [TECHNICAL_DOCUMENT.md](TECHNICAL_DOCUMENT.md) - 2-page technical document for submission
-
-### Development
-- [WORKFLOW.md](WORKFLOW.md) - Step-by-step development workflow
-- [CHECKLIST.md](CHECKLIST.md) - Implementation checklist with time estimates
-- [PROJECT_SUMMARY.md](PROJECT_SUMMARY.md) - Complete project overview
-
-### Operations
-- [DEPLOYMENT.md](DEPLOYMENT.md) - Deployment instructions for Render + Vercel
-- [TROUBLESHOOTING.md](TROUBLESHOOTING.md) - Common issues and solutions
-
-## API Endpoints
-
-- `GET /health` - Health check
-- `POST /recommend` - Get recommendations
-- `GET /stats` - System statistics
-
-API docs: http://localhost:8000/docs
+1. **Data Collection**: Assessment catalog is built from SHL product URLs
+2. **Embedding Generation**: Each assessment is converted to a semantic vector using sentence-BERT
+3. **Query Processing**: User queries are analyzed to determine the balance of technical vs behavioral needs
+4. **Retrieval**: Top candidates are retrieved using cosine similarity
+5. **Re-ranking**: Cross-encoder model re-ranks candidates for better relevance
+6. **Balancing**: Final recommendations are balanced between K and P type assessments
 
 ## Evaluation
 
-The system achieves strong Recall@K performance through:
-1. Enriched text embeddings
-2. Cross-encoder re-ranking
-3. Balanced K/P filtering
-4. Query-aware weight adjustment
+The system is evaluated using Mean Recall@10:
 
-See [TECHNICAL_DOCUMENT.md](TECHNICAL_DOCUMENT.md) for detailed evaluation results.
+```bash
+cd backend
+python evaluate.py
+```
+
+## Generating Submission Files
+
+```bash
+cd backend
+python export_csv.py
+```
+
+This generates `data/submission.csv` with recommendations for all test queries.
+
+## Configuration
+
+Environment variables can be set in `.env`:
+
+```
+EMBEDDING_MODEL=all-MiniLM-L6-v2
+RERANKER_MODEL=cross-encoder/ms-marco-MiniLM-L-6-v2
+```
+
+## Deployment
+
+See `DEPLOYMENT_GUIDE.md` for detailed deployment instructions for Render, Vercel, and other platforms.
+
+## License
+
+This project was created as part of a technical assessment.
+
+## Author
+
+Developed as a solution for the SHL Assessment Recommendation challenge.

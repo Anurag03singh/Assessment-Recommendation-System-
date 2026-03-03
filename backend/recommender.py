@@ -12,16 +12,26 @@ class RecommendationEngine:
         
         # Keywords for query analysis
         self.technical_keywords = [
-            'java', 'python', 'coding', 'programming', 'technical', 'software',
+            'java', 'python', 'sql', 'javascript', 'coding', 'programming', 'technical', 'software',
             'numerical', 'analytical', 'problem solving', 'cognitive', 'aptitude',
-            'skill', 'ability', 'knowledge', 'competency'
+            'skill', 'ability', 'knowledge', 'competency', 'developer', 'engineer'
         ]
         
         self.soft_keywords = [
             'communication', 'leadership', 'teamwork', 'collaboration', 'personality',
-            'behavior', 'motivation', 'culture', 'interpersonal', 'emotional',
-            'adaptability', 'resilience', 'integrity'
+            'behavior', 'behaviour', 'motivation', 'culture', 'interpersonal', 'emotional',
+            'adaptability', 'resilience', 'integrity', 'judgment', 'situational'
         ]
+    
+    def is_knowledge_test(self, test_type_str: str) -> bool:
+        """Check if test is knowledge/skills based"""
+        knowledge_types = ['Knowledge & Skills', 'Ability & Aptitude', 'Competencies']
+        return any(kt in test_type_str for kt in knowledge_types)
+    
+    def is_personality_test(self, test_type_str: str) -> bool:
+        """Check if test is personality/behavior based"""
+        personality_types = ['Personality & Behaviour', 'Biodata & Situational Judgement']
+        return any(pt in test_type_str for pt in personality_types)
     
     def analyze_query(self, query: str) -> Dict[str, float]:
         """Analyze query to determine K vs P weight"""
@@ -49,8 +59,8 @@ class RecommendationEngine:
                                   top_k: int = 10) -> List[Dict]:
         """Apply balanced K/P filtering"""
         # Separate by type
-        k_candidates = [c for c in candidates if c['metadata']['test_type'] == 'K']
-        p_candidates = [c for c in candidates if c['metadata']['test_type'] == 'P']
+        k_candidates = [c for c in candidates if self.is_knowledge_test(c['metadata']['test_type'])]
+        p_candidates = [c for c in candidates if self.is_personality_test(c['metadata']['test_type'])]
         
         # Calculate target counts
         k_count = int(top_k * weights['K'])
@@ -99,13 +109,17 @@ class RecommendationEngine:
         # Format output
         results = []
         for rec in recommendations:
+            # Parse test_type string back to list
+            test_type_list = [t.strip() for t in rec['metadata']['test_type'].split(',')]
+            
             results.append({
-                'assessment_name': rec['metadata']['assessment_name'],
                 'url': rec['metadata']['url'],
-                'test_type': rec['metadata']['test_type'],
+                'adaptive_support': rec['metadata']['adaptive_support'],
                 'description': rec['metadata']['description'],
-                'skills': rec['metadata']['skills'],
-                'category': rec['metadata']['category'],
+                'duration': rec['metadata']['duration'],
+                'remote_support': rec['metadata']['remote_support'],
+                'test_type_list': test_type_list,
+                'test_type': rec['metadata']['test_type'],  # Keep for internal use
                 'score': rec.get('rerank_score', 0)
             })
         

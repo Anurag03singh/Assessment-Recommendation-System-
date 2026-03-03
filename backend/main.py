@@ -1,5 +1,8 @@
 """
 FastAPI Backend for SHL Assessment Recommendation System
+
+This API provides endpoints for recommending SHL assessments based on job descriptions.
+It uses semantic search and machine learning to match queries with relevant assessments.
 """
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,23 +13,24 @@ from bs4 import BeautifulSoup
 from embeddings import EmbeddingManager
 from recommender import RecommendationEngine
 
+# Initialize FastAPI app
 app = FastAPI(title="SHL Assessment Recommender API")
 
-# CORS
+# Enable CORS for frontend access
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # In production, specify exact origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Initialize engine
+# Initialize recommendation engine on startup
 em = EmbeddingManager()
 try:
     em.load_collection()
     engine = RecommendationEngine(em)
-    print("✓ Recommendation engine loaded")
+    print("✓ Recommendation engine loaded successfully")
 except Exception as e:
     print(f"⚠️  Warning: Could not load collection: {e}")
     print("Run 'python embeddings.py' to build the index first")
@@ -40,28 +44,24 @@ class RecommendRequest(BaseModel):
     top_k: int = 10
 
 
-class Assessment(BaseModel):
-    assessment_name: str
+class RecommendedAssessment(BaseModel):
     url: str
-    test_type: str
+    adaptive_support: str
     description: str
-    skills: str
-    category: str
+    duration: int
+    remote_support: str
+    test_type: List[str]
 
 
 class RecommendResponse(BaseModel):
-    recommendations: List[Assessment]
-    query_used: str
-    k_count: int
-    p_count: int
+    recommended_assessments: List[RecommendedAssessment]
 
 
 @app.get("/health")
 def health_check():
     """Health check endpoint"""
     return {
-        "status": "healthy",
-        "engine_loaded": engine is not None
+        "status": "healthy"
     }
 
 
@@ -105,15 +105,20 @@ def recommend(request: RecommendRequest):
     try:
         recommendations = engine.recommend(query, top_k=request.top_k)
         
-        # Count K vs P
-        k_count = sum(1 for r in recommendations if r['test_type'] == 'K')
-        p_count = len(recommendations) - k_count
+        # Format according to spec
+        formatted_recs = []
+        for r in recommendations:
+            formatted_recs.append(RecommendedAssessment(
+                url=r['url'],
+                adaptive_support=r.get('adaptive_support', 'No'),
+                description=r['description'],
+                duration=r.get('duration', 60),
+                remote_support=r.get('remote_support', 'Yes'),
+                test_type=r.get('test_type_list', [r['test_type']])
+            ))
         
         return RecommendResponse(
-            recommendations=[Assessment(**r) for r in recommendations],
-            query_used=query[:200] + "..." if len(query) > 200 else query,
-            k_count=k_count,
-            p_count=p_count
+            recommended_assessments=formatted_recs
         )
     
     except Exception as e:

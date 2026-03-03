@@ -98,18 +98,10 @@ function App() {
 
         {results && (
           <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="mb-4 flex justify-between items-center">
+            <div className="mb-4">
               <h2 className="text-2xl font-bold text-gray-900">
-                Top {results.recommendations.length} Recommendations
+                Top {results.recommended_assessments.length} Recommendations
               </h2>
-              <div className="flex gap-2">
-                <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
-                  K: {results.k_count}
-                </span>
-                <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">
-                  P: {results.p_count}
-                </span>
-              </div>
             </div>
 
             {/* Table Format */}
@@ -121,19 +113,19 @@ function App() {
                       #
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Type
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Assessment Name
+                      Test Type
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Description
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Skills
+                      Duration
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Category
+                      Remote
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Adaptive
                     </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       URL
@@ -141,35 +133,48 @@ function App() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {results.recommendations.map((rec, idx) => (
+                  {results.recommended_assessments.map((rec, idx) => (
                     <tr key={idx} className="hover:bg-gray-50">
                       <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900">
                         {idx + 1}
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap">
-                        <span
-                          className={`px-2 py-1 rounded text-xs font-medium ${
-                            rec.test_type === 'K'
-                              ? 'bg-blue-100 text-blue-800'
-                              : 'bg-purple-100 text-purple-800'
-                          }`}
-                        >
-                          {rec.test_type === 'K' ? 'Knowledge' : 'Personality'}
-                        </span>
+                      <td className="px-4 py-4 text-sm">
+                        <div className="flex flex-wrap gap-1">
+                          {rec.test_type.map((type, i) => (
+                            <span
+                              key={i}
+                              className="px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800"
+                            >
+                              {type}
+                            </span>
+                          ))}
+                        </div>
                       </td>
-                      <td className="px-4 py-4 text-sm font-medium text-gray-900">
-                        {rec.assessment_name}
-                      </td>
-                      <td className="px-4 py-4 text-sm text-gray-600 max-w-xs">
-                        {rec.description.length > 100
-                          ? rec.description.substring(0, 100) + '...'
+                      <td className="px-4 py-4 text-sm text-gray-600 max-w-md">
+                        {rec.description.length > 150
+                          ? rec.description.substring(0, 150) + '...'
                           : rec.description}
                       </td>
-                      <td className="px-4 py-4 text-sm text-gray-600">
-                        {rec.skills}
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-600">
+                        {rec.duration} min
                       </td>
-                      <td className="px-4 py-4 text-sm text-gray-600">
-                        {rec.category}
+                      <td className="px-4 py-4 whitespace-nowrap text-sm">
+                        <span className={`px-2 py-1 rounded text-xs ${
+                          rec.remote_support === 'Yes' 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-gray-100 text-gray-800'
+                        }`}>
+                          {rec.remote_support}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm">
+                        <span className={`px-2 py-1 rounded text-xs ${
+                          rec.adaptive_support === 'Yes' 
+                            ? 'bg-purple-100 text-purple-800' 
+                            : 'bg-gray-100 text-gray-800'
+                        }`}>
+                          {rec.adaptive_support}
+                        </span>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-sm">
                         <a
