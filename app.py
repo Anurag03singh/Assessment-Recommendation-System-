@@ -1,7 +1,7 @@
 """
-Entry point for Render deployment
+Entry point for Railway deployment - Minimal version
 """
-from backend.main_production import app
+from backend.main_minimal import app
 
 if __name__ == "__main__":
     import uvicorn

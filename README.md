@@ -138,23 +138,24 @@ Response:
 ```
 ├── backend/
 │   ├── main_production.py      # Production API (memory optimized)
-│   ├── main_optimized.py       # Ultra-lite fallback
 │   ├── embeddings_lite.py      # Memory-efficient embeddings
 │   ├── recommender.py          # Recommendation engine
 │   ├── requirements-lite.txt   # Minimal dependencies (512MB)
 │   └── data/
 │       └── shl_catalog.json    # Assessment catalog (54 items)
 ├── chroma_db/                  # Pre-built vector database
-├── frontend/
+├── frontend/                   # React application
 │   └── src/
-│       └── App.jsx             # React application
+│       └── App.jsx
 ├── render.yaml                 # Render deployment config
 ├── railway.json                # Railway deployment config
 ├── fly.toml                    # Fly.io deployment config
+├── Procfile                    # Process file
 ├── build_embeddings.py         # Build ChromaDB locally
 ├── deploy_check.py             # Pre-deployment verification
-├── DEPLOY_READY.md             # Quick deployment guide
-└── DEPLOYMENT_OPTIMIZED.md     # Detailed optimization guide
+├── DEPLOY_READY.md             # Deployment guide
+├── QUICK_DEPLOY.md             # Quick reference
+└── README.md                   # This file
 ```
 
 ## How It Works

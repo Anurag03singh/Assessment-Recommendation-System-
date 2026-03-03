@@ -55,8 +55,7 @@ def main():
     checks.append(check_file("backend/recommender.py", "Recommender engine"))
     
     print("\n📦 Dependencies:")
-    checks.append(check_file("backend/requirements-lite.txt", "Lite requirements"))
-    checks.append(check_file("backend/requirements.txt", "Full requirements"))
+    checks.append(check_file("backend/requirements-lite.txt", "Production requirements"))
     
     print("\n📊 Data Files:")
     checks.append(check_json_file("backend/data/shl_catalog.json", "Assessment catalog"))
@@ -72,7 +71,7 @@ def main():
     
     print("\n📖 Documentation:")
     checks.append(check_file("DEPLOY_READY.md", "Deployment guide"))
-    checks.append(check_file("DEPLOYMENT_OPTIMIZED.md", "Optimization guide"))
+    checks.append(check_file("QUICK_DEPLOY.md", "Quick reference"))
     
     print("\n" + "=" * 70)
     
