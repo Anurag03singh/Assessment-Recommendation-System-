@@ -29,12 +29,14 @@ git push origin main
 4. Configure:
    - **Name**: `shl-recommender-api`
    - **Environment**: `Python 3`
-   - **Build Command**: `pip install -r requirements.txt && python backend/embeddings.py`
+   - **Build Command**: `pip install -r requirements.txt`
    - **Start Command**: `uvicorn app:app --host 0.0.0.0 --port $PORT`
-   - **Instance Type**: Free
+   - **Instance Type**: Free (or Starter for better performance)
 5. Click "Create Web Service"
 6. Wait for deployment (5-10 minutes)
 7. Note your API URL: `https://shl-recommender-api.onrender.com`
+
+**Note:** Free tier has 512MB RAM limit. Embeddings will build on first request (takes ~30s). For instant startup, upgrade to Starter ($7/month) or use Railway.
 
 ### 3. Test Deployment
 

@@ -10,7 +10,14 @@ from pydantic import BaseModel
 from typing import List, Optional
 import requests
 from bs4 import BeautifulSoup
-from embeddings import EmbeddingManager
+import os
+
+# Use lite version in production/low-memory environments
+if os.environ.get('USE_LITE_MODE', 'false').lower() == 'true':
+    from embeddings_lite import EmbeddingManager
+else:
+    from embeddings import EmbeddingManager
+
 from recommender import RecommendationEngine
 
 # Initialize FastAPI app
@@ -26,15 +33,47 @@ app.add_middleware(
 )
 
 # Initialize recommendation engine on startup
-em = EmbeddingManager()
-try:
-    em.load_collection()
-    engine = RecommendationEngine(em)
-    print("✓ Recommendation engine loaded successfully")
-except Exception as e:
-    print(f"⚠️  Warning: Could not load collection: {e}")
-    print("Run 'python embeddings.py' to build the index first")
-    engine = None
+em = None
+engine = None
+
+def get_engine():
+    """Lazy load engine - builds embeddings on first request if needed"""
+    global engine, em
+    if engine is None:
+        # Initialize embedding manager
+        if em is None:
+            em = EmbeddingManager()
+        
+        try:
+            em.load_collection()
+            engine = RecommendationEngine(em)
+            print("✓ Recommendation engine loaded successfully")
+        except Exception as e:
+            print(f"⚠️  Building embeddings (first time only, ~30 seconds)...")
+            # Build embeddings if collection doesn't exist
+            import json
+            
+            possible_paths = [
+                "backend/data/shl_catalog.json",
+                "data/shl_catalog.json"
+            ]
+            
+            catalog_file = None
+            for path in possible_paths:
+                if os.path.exists(path):
+                    catalog_file = path
+                    break
+            
+            if catalog_file:
+                with open(catalog_file, 'r', encoding='utf-8') as f:
+                    assessments = json.load(f)
+                em.build_index(assessments)
+                engine = RecommendationEngine(em)
+                print("✓ Embeddings built and engine loaded")
+            else:
+                raise Exception("No catalog file found")
+    
+    return engine
 
 
 class RecommendRequest(BaseModel):
@@ -68,8 +107,10 @@ def health_check():
 @app.post("/recommend", response_model=RecommendResponse)
 def recommend(request: RecommendRequest):
     """Get assessment recommendations"""
+    engine = get_engine()
+    
     if not engine:
-        raise HTTPException(status_code=503, detail="Engine not initialized. Build index first.")
+        raise HTTPException(status_code=503, detail="Engine initialization failed")
     
     # Determine query source
     query = None
@@ -128,16 +169,20 @@ def recommend(request: RecommendRequest):
 @app.get("/stats")
 def get_stats():
     """Get system statistics"""
-    if not engine or not engine.em.collection:
-        return {"error": "Collection not loaded"}
-    
-    count = engine.em.collection.count()
-    
-    return {
-        "total_assessments": count,
-        "embedding_model": "all-MiniLM-L6-v2",
-        "reranker": "cross-encoder/ms-marco-MiniLM-L-6-v2"
-    }
+    try:
+        engine = get_engine()
+        if not engine or not engine.em.collection:
+            return {"error": "Collection not loaded"}
+        
+        count = engine.em.collection.count()
+        
+        return {
+            "total_assessments": count,
+            "embedding_model": "all-MiniLM-L6-v2",
+            "reranker": "cross-encoder/ms-marco-MiniLM-L-6-v2"
+        }
+    except Exception as e:
+        return {"error": str(e)}
 
 
 if __name__ == "__main__":

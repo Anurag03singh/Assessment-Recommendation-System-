@@ -1,14 +1,18 @@
-fastapi>=0.104.1
-uvicorn[standard]>=0.24.0
-pydantic>=2.5.0
-sentence-transformers>=2.2.2
-torch>=2.0.0
-transformers>=4.35.0
-chromadb>=0.4.18
-numpy>=1.24.0
-pandas>=2.1.0
-requests>=2.31.0
-beautifulsoup4>=4.12.0
-lxml>=4.9.0
-python-dotenv>=1.0.0
-mangum>=0.17.0
+# Minimal requirements for Vercel serverless deployment
+# Core API
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.5.0
+requests==2.31.0
+beautifulsoup4==4.12.2
+lxml==4.9.3
+mangum==0.17.0
+
+# Lightweight ML stack (no PyTorch)
+sentence-transformers==2.2.2
+chromadb==0.4.18
+numpy==1.24.3
+
+# Use ONNX runtime instead of PyTorch (much smaller)
+onnxruntime==1.16.0
+
